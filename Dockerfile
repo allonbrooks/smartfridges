@@ -1,15 +1,14 @@
 # 微信云托管专用 Dockerfile
-# 项目代码在 project/ 子目录下
 FROM python:3.11-slim
 
 WORKDIR /app
 
 # 安装 Python 依赖
-COPY project/requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 复制项目代码
-COPY project/ .
+# 复制项目代码（.dockerignore 排除无关目录）
+COPY . .
 
 # 收集静态文件
 RUN python manage.py collectstatic --noinput --settings=config.settings.prod
