@@ -20,4 +20,6 @@ RUN python manage.py collectstatic --noinput --settings=config.settings.prod
 
 # 启动
 EXPOSE 80
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:80", "--workers", "4", "--timeout", "60"]
+COPY start.sh .
+RUN chmod +x start.sh
+CMD ["./start.sh"]

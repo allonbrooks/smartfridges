@@ -129,4 +129,4 @@ class TestItemAPI:
         }, HTTP_X_WX_OPENID=openid)
         resp = client.get('/api/logs', HTTP_X_WX_OPENID=openid)
         assert resp.status_code == 200
-        assert len(resp.json()['results']['data']) > 0
+        assert len(resp.json()['data']) > 0

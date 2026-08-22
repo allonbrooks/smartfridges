@@ -130,7 +130,7 @@ def list_items(request):
     paginator = StandardPagination()
     result_page = paginator.paginate_queryset(items, request)
     serializer = FoodItemSerializer(result_page, many=True)
-    return paginator.get_paginated_response({'data': serializer.data, 'success': True})
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(['GET'])
@@ -171,8 +171,6 @@ def create_items_batch(request):
     space_id = request.data.get('storage_space_id')
     created = []
     for item_data in items_data:
-        item_data['family'] = family
-        item_data['added_by'] = user
         if space_id:
             item_data['storage_space_id'] = space_id
         serializer = FoodItemCreateSerializer(data=item_data)
@@ -221,9 +219,12 @@ def voice_entry(request):
 def update_item(request, item_id):
     """编辑物品"""
     user = request.wx_user
+    family = request.wx_family
     if not user:
         return Response({'error': '未登录', 'success': False}, status=401)
-    item = get_object_or_404(FoodItem, id=item_id)
+    if not family:
+        return Response({'error': '未加入家庭', 'success': False}, status=404)
+    item = get_object_or_404(FoodItem, id=item_id, family=family)
     serializer = FoodItemCreateSerializer(item, data=request.data, partial=True)
     serializer.is_valid(raise_exception=True)
     serializer.save()
@@ -235,9 +236,12 @@ def update_item(request, item_id):
 def consume_item(request, item_id):
     """消耗物品（减数量）"""
     user = request.wx_user
+    family = request.wx_family
     if not user:
         return Response({'error': '未登录', 'success': False}, status=401)
-    item = get_object_or_404(FoodItem, id=item_id)
+    if not family:
+        return Response({'error': '未加入家庭', 'success': False}, status=404)
+    item = get_object_or_404(FoodItem, id=item_id, family=family)
     serializer = ConsumeSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     qty = serializer.validated_data['quantity']
@@ -256,9 +260,12 @@ def consume_item(request, item_id):
 def restore_item(request, item_id):
     """恢复已消耗物品"""
     user = request.wx_user
+    family = request.wx_family
     if not user:
         return Response({'error': '未登录', 'success': False}, status=401)
-    item = get_object_or_404(FoodItem, id=item_id)
+    if not family:
+        return Response({'error': '未加入家庭', 'success': False}, status=404)
+    item = get_object_or_404(FoodItem, id=item_id, family=family)
     if not item.is_consumed:
         return Response({'error': '物品未消耗', 'success': False}, status=400)
     item.is_consumed = False
@@ -282,6 +289,8 @@ def delete_item(request, item_id):
         member = Member.objects.get(user=user, family=item.family)
     except Member.DoesNotExist:
         return Response({'error': '无权操作', 'success': False}, status=403)
+    if member.role != Member.Role.ADMIN and item.added_by != user:
+        return Response({'error': '无权限', 'success': False}, status=403)
     _log_operation(user, item.family, OperationLog.Action.DELETE, item, f'删除了 {item.name}')
     item.delete()
     return Response({'success': True})
@@ -300,4 +309,4 @@ def list_logs(request):
     paginator = StandardPagination()
     result_page = paginator.paginate_queryset(logs, request)
     serializer = OperationLogSerializer(result_page, many=True)
-    return paginator.get_paginated_response({'data': serializer.data, 'success': True})
+    return paginator.get_paginated_response(serializer.data)

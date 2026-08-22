@@ -41,6 +41,8 @@ class FoodItemSerializer(serializers.ModelSerializer):
 
 class FoodItemCreateSerializer(serializers.ModelSerializer):
     """创建物品时使用，不需要计算字段"""
+    quantity = serializers.IntegerField(default=1, min_value=1)
+
     class Meta:
         model = FoodItem
         fields = [

@@ -65,6 +65,12 @@ def current_family(request):
 @api_view(['GET'])
 def family_members(request, family_id):
     """成员列表"""
+    user = request.wx_user
+    if not user:
+        return Response({'error': '未登录', 'success': False}, status=401)
+    # Verify user belongs to this family
+    if not Member.objects.filter(user=user, family_id=family_id).exists():
+        return Response({'error': '无权限访问该家庭', 'success': False}, status=403)
     family = get_object_or_404(FamilyGroup, id=family_id)
     members = Member.objects.filter(family=family).select_related('user')
     serializer = MemberSerializer(members, many=True)
@@ -81,5 +87,9 @@ def remove_member(request, family_id, user_id):
     if member.role != Member.Role.ADMIN:
         return Response({'error': '无权限', 'success': False}, status=403)
     target = get_object_or_404(Member, family_id=family_id, user_id=user_id)
+    if target.role == Member.Role.ADMIN:
+        admin_count = Member.objects.filter(family_id=family_id, role=Member.Role.ADMIN).count()
+        if admin_count <= 1:
+            return Response({'error': '至少保留一位管理员', 'success': False}, status=400)
     target.delete()
     return Response({'success': True})
