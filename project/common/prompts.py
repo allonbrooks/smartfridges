@@ -31,4 +31,4 @@ RECIPE_GENERATE_PROMPT = """你是一个家庭厨师。用户冰箱里有以下�
 5. 回复必须是 JSON 格式，不要包含其他文字
 
 输出格式：
-{"title":"菜名","ingredients":[{"name":"食材","quantity":1,"unit":"份","in_fridge":true}],"missing_items":["缺的食材"],"steps":["步骤1","步骤2"],"estimated_time":"30分钟"}"""
+{{"title":"菜名","ingredients":[{{"name":"食材","quantity":1,"unit":"份","in_fridge":true}}],"missing_items":["缺的食材"],"steps":["步骤1","步骤2"],"estimated_time":"30分钟"}}"""
