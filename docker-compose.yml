@@ -3,15 +3,14 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:15
+    image: mysql:8.0
     environment:
-      POSTGRES_DB: fridge
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: devpassword
+      MYSQL_DATABASE: fridge
+      MYSQL_ROOT_PASSWORD: devpassword
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mysqldata:/var/lib/mysql
 
   web:
     build: .
@@ -23,11 +22,11 @@ services:
       DB_USER: root
       DB_PASSWORD: devpassword
       DB_HOST: db
-      DB_PORT: 5432
+      DB_PORT: 3306
       DJANGO_SECRET_KEY: dev-secret-key
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
     depends_on:
       - db
 
 volumes:
-  pgdata:
+  mysqldata:
