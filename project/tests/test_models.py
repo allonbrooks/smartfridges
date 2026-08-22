@@ -65,3 +65,16 @@ class TestShoppingList:
         )
         assert item.item_name == '鸡蛋'
         assert not item.is_purchased
+
+
+@pytest.mark.django_db
+class TestSeedData:
+    def test_create_default_spaces(self):
+        from scripts.seed_data import create_default_spaces
+        family = FamilyGroup.objects.create(name='种子测试', invite_code='SEED01')
+        create_default_spaces(family)
+        spaces = family.storage_spaces.all()
+        assert spaces.count() == 4
+        names = [s.name for s in spaces]
+        assert '冷藏区' in names
+        assert '冷冻区' in names

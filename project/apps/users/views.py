@@ -6,6 +6,7 @@ from .models import User, FamilyGroup, Member
 from .serializers import (
     UserSerializer, FamilyGroupSerializer, MemberSerializer, JoinFamilySerializer
 )
+from scripts.seed_data import create_default_spaces
 
 
 @api_view(['POST'])
@@ -29,6 +30,7 @@ def create_family(request):
     )
     serializer.is_valid(raise_exception=True)
     family = serializer.save()
+    create_default_spaces(family)
     return Response({'data': FamilyGroupSerializer(family).data, 'success': True}, status=201)
 
 
