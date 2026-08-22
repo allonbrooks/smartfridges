@@ -6,6 +6,7 @@ LLM API 统一客户端。
 """
 import os
 import logging
+import time
 from openai import OpenAI
 
 logger = logging.getLogger(__name__)
@@ -43,6 +44,5 @@ class LLMClient:
                 last_error = e
                 logger.warning(f'LLM 调用失败 (第{attempt + 1}次): {e}')
                 if attempt < MAX_RETRIES:
-                    import time
                     time.sleep(1)
         raise last_error
