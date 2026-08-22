@@ -14,17 +14,6 @@ from .services.voice_parser import parse_voice_text
 from .services.barcode_service import lookup_barcode
 
 
-def _check_family_access(request, family_id):
-    """检查用户是否有权访问该家庭"""
-    if not request.wx_user or not request.wx_family:
-        return None
-    if str(request.wx_family.id) != str(family_id):
-        # 检查用户是否是该家庭的成员
-        if not Member.objects.filter(user=request.wx_user, family_id=family_id).exists():
-            return None
-    return request.wx_family
-
-
 def _log_operation(user, family, action, item, detail=''):
     """记录操作日志"""
     OperationLog.objects.create(
@@ -137,7 +126,6 @@ def list_items(request):
     elif consumed != '1':
         items = items.filter(is_consumed=False)
     items = items.order_by('-created_at')
-    page = request.query_params.get('page', 1)
     from common.pagination import StandardPagination
     paginator = StandardPagination()
     result_page = paginator.paginate_queryset(items, request)
@@ -148,7 +136,10 @@ def list_items(request):
 @api_view(['GET'])
 def item_detail(request, item_id):
     """物品详情"""
-    item = get_object_or_404(FoodItem, id=item_id)
+    family = request.wx_family
+    if not family:
+        return Response({'error': '未加入家庭', 'success': False}, status=404)
+    item = get_object_or_404(FoodItem, id=item_id, family=family)
     serializer = FoodItemSerializer(item)
     return Response({'data': serializer.data, 'success': True})
 
