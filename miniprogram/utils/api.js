@@ -70,11 +70,12 @@ const items = {
   delete: (id) => request(`/api/items/${id}`, { method: 'DELETE' }),
   barcode: (code) => request('/api/items/barcode', { method: 'POST', data: { barcode: code } }),
   voice: (text) => request('/api/items/voice', { method: 'POST', data: { raw_text: text } }),
+  photo: (base64Image) => request('/api/items/photo', { method: 'POST', data: { image: base64Image } }),
 }
 
 // 菜谱 API
 const recipes = {
-  generate: (itemIds) => request('/api/recipes/generate', { method: 'POST', data: { item_ids: itemIds } }),
+  generate: (itemIds, preferences = '') => request('/api/recipes/generate', { method: 'POST', data: { item_ids: itemIds, preferences } }),
 }
 
 // 购物清单 API

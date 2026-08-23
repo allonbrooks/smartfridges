@@ -164,6 +164,69 @@ Page({
     })
   },
 
+  takePhoto() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['camera', 'album'],
+      success: (res) => {
+        const filePath = res.tempFilePaths[0]
+        wx.showLoading({ title: '识别中...' })
+        // 读取文件为 base64
+        const fs = wx.getFileSystemManager()
+        const base64 = fs.readFileSync(filePath, 'base64')
+        api.items.photo(base64).then(result => {
+          wx.hideLoading()
+          if (result.success && result.data) {
+            const items = result.data.items || []
+            if (items.length === 0) {
+              wx.showToast({ title: '未识别到食材', icon: 'none' })
+              return
+            }
+            const names = items.map(i => `${i.name} x${i.quantity}${i.unit || '个'}`).join('、')
+            wx.showModal({
+              title: '识别结果',
+              content: `识别到 ${items.length} 种食材：${names}，确认保存？`,
+              success: (r) => {
+                if (r.confirm) {
+                  wx.showLoading({ title: '保存中...' })
+                  // 逐一创建物品
+                  const promises = items.map(item =>
+                    api.items.create({
+                      name: item.name,
+                      quantity: item.quantity || 1,
+                      unit: item.unit || '个',
+                      category: item.category || 'other',
+                      expiry_date: (() => {
+                        const d = new Date()
+                        d.setDate(d.getDate() + (item.expiry_days || 7))
+                        return d.toISOString().split('T')[0]
+                      })(),
+                      calories: item.calories || null,
+                    })
+                  )
+                  Promise.all(promises).then(() => {
+                    wx.hideLoading()
+                    wx.showToast({ title: '保存成功', icon: 'success' })
+                    this.loadOverview()
+                  }).catch(() => {
+                    wx.hideLoading()
+                    wx.showToast({ title: '部分保存失败', icon: 'none' })
+                  })
+                }
+              }
+            })
+          } else {
+            wx.showToast({ title: '识别失败', icon: 'none' })
+          }
+        }).catch(() => {
+          wx.hideLoading()
+          wx.showToast({ title: '识别失败', icon: 'none' })
+        })
+      }
+    })
+  },
+
   onItemTap(e) {
     const id = e.currentTarget.dataset.id
     wx.navigateTo({ url: `/pages/space-detail/space-detail?itemId=${id}` })

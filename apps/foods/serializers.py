@@ -19,7 +19,7 @@ class FoodItemSerializer(serializers.ModelSerializer):
         model = FoodItem
         fields = [
             'id', 'name', 'category', 'storage_space_id', 'space_name', 'barcode', 'icon',
-            'quantity', 'unit', 'expiry_date', 'days_to_expire',
+            'quantity', 'unit', 'expiry_date', 'days_to_expire', 'calories',
             'added_by', 'added_by_name', 'note', 'is_consumed',
             'consumed_at', 'status', 'days_remaining', 'created_at', 'updated_at',
         ]
@@ -50,7 +50,7 @@ class FoodItemCreateSerializer(serializers.ModelSerializer):
         model = FoodItem
         fields = [
             'name', 'category', 'storage_space', 'barcode', 'icon',
-            'quantity', 'unit', 'expiry_date', 'days_to_expire', 'note',
+            'quantity', 'unit', 'expiry_date', 'days_to_expire', 'calories', 'note',
         ]
 
     def validate(self, attrs):

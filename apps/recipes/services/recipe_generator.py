@@ -18,6 +18,7 @@ def generate_recipe(item_ids: list, preferences: str = '') -> dict:
                 'missing_items': [str],
                 'steps': [str],
                 'estimated_time': str,
+                'calories': int,
                 'suitable_for': str,
                 'taste': str,
             }
@@ -30,11 +31,10 @@ def generate_recipe(item_ids: list, preferences: str = '') -> dict:
         return {'error': '未找到选中的食材或食材已消耗'}
 
     ingredients_text = ', '.join(f'{item.name} x{item.quantity}{item.unit}' for item in items)
-    if preferences:
-        ingredients_text += f'\n偏好：{preferences}'
+    pref_text = preferences or '无限制'
 
     client = LLMClient()
-    prompt = RECIPE_GENERATE_PROMPT.format(ingredients=ingredients_text)
+    prompt = RECIPE_GENERATE_PROMPT.format(ingredients=ingredients_text, preferences=pref_text)
     try:
         result = client.chat([
             {'role': 'system', 'content': '你是一个家庭厨师，只输出 JSON。'},
@@ -53,6 +53,7 @@ def generate_recipe(item_ids: list, preferences: str = '') -> dict:
             recipe.setdefault('missing_items', [])
             recipe.setdefault('steps', [])
             recipe.setdefault('estimated_time', '30分钟')
+            recipe.setdefault('calories', 0)
             recipe.setdefault('suitable_for', '适合全家')
             recipe.setdefault('taste', '家常')
             # 标记冰箱里已有的食材

@@ -11,6 +11,7 @@ urlpatterns = [
     path('items/batch', views.create_items_batch, name='item-batch-create'),
     path('items/barcode', views.barcode_entry, name='item-barcode'),
     path('items/voice', views.voice_entry, name='item-voice'),
+    path('items/photo', views.photo_entry, name='item-photo'),
     path('items/<uuid:item_id>', views.item_detail, name='item-detail'),
     path('items/<uuid:item_id>/consume', views.consume_item, name='item-consume'),
     path('items/<uuid:item_id>/restore', views.restore_item, name='item-restore'),

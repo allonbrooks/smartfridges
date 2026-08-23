@@ -20,6 +20,7 @@
         <text class="item-expiry status-{{item.status}}">
           {{item.status === 'red' ? '已过期' + (-item.days_remaining) + '天' : item.status === 'yellow' ? '剩' + item.days_remaining + '天' : '保质期充足'}}
         </text>
+        <text class="item-calorie" wx:if="{{item.calories}}">{{item.calories}} kcal/100g</text>
         <text class="item-meta">到期 {{item.expiryDisplay}} · {{item.createdDisplay}} 录入</text>
       </view>
       <view class="item-actions">

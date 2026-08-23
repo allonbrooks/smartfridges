@@ -255,6 +255,38 @@ def voice_entry(request):
     return Response({'data': result, 'success': True})
 
 
+@api_view(['POST'])
+def photo_entry(request):
+    """拍照录入（识别图片中的食材，解析仅返回，不保存）"""
+    import base64
+    image_data = request.data.get('image', '')
+    if not image_data:
+        return Response({'error': '图片不能为空', 'success': False}, status=400)
+    try:
+        from common.llm_client import LLMClient
+        from common.prompts import PHOTO_RECOGNIZE_PROMPT
+        client = LLMClient()
+        result = client.vision_chat(
+            messages=[{'role': 'user', 'content': PHOTO_RECOGNIZE_PROMPT}],
+            image_base64=image_data,
+        )
+        import json
+        data = json.loads(result)
+        items = data.get('items', [])
+        return Response({
+            'data': {
+                'items': items,
+                'suggestion': f'识别到 {len(items)} 种食材，确认保存？',
+            },
+            'success': True,
+        })
+    except json.JSONDecodeError:
+        return Response({'error': '识别结果解析失败', 'success': False}, status=500)
+    except Exception as e:
+        logger.error(f'拍照识别失败: {e}')
+        return Response({'error': '识别失败，请重试', 'success': False}, status=500)
+
+
 @api_view(['PATCH'])
 def consume_item(request, item_id):
     """消耗物品（减数量）"""

@@ -23,6 +23,8 @@ RECIPE_GENERATE_PROMPT = """你是一个家庭厨师。用户冰箱里有以下�
 食材列表：
 {ingredients}
 
+饮食偏好：{preferences}
+
 要求：
 1. 推荐 3-5 道菜谱，菜名要具体（如"番茄鸡蛋面"不是"面条"）
 2. 每道菜列出所有食材，标出哪些是冰箱里已有的，哪些是缺少的
@@ -30,7 +32,22 @@ RECIPE_GENERATE_PROMPT = """你是一个家庭厨师。用户冰箱里有以下�
 4. 估计烹饪时间
 5. 标注适合什么人群（如：适合全家、适合老人、适合儿童、适合减脂期、适合健身增肌等）
 6. 标注口味特点（如：清淡、微辣、酸甜、浓郁、鲜香等）
-7. 回复必须是 JSON 格式，不要包含其他文字
+7. 每道菜标注总热量（calories，单位：kcal），根据食材和分量估算
+8. 如果用户有饮食偏好（如减脂、增肌），推荐的菜谱应符合该偏好
+9. 回复必须是 JSON 格式，不要包含其他文字
 
 输出格式：
-{{"recipes":[{{"title":"菜名","ingredients":[{{"name":"食材","quantity":1,"unit":"份","in_fridge":true}}],"missing_items":["缺的食材"],"steps":["步骤1","步骤2"],"estimated_time":"30分钟","suitable_for":"适合人群","taste":"口味特点"}}]}}"""
+{{"recipes":[{{"title":"菜名","ingredients":[{{"name":"食材","quantity":1,"unit":"份","in_fridge":true}}],"missing_items":["缺的食材"],"steps":["步骤1","步骤2"],"estimated_time":"30分钟","calories":450,"suitable_for":"适合人群","taste":"口味特点"}}]}}"""
+
+PHOTO_RECOGNIZE_PROMPT = """你是一个家庭食材识别助手。请识别图片中的食材，并返回结构化数据。
+
+要求：
+1. 识别出图片中所有可见的食材
+2. 每种食材给出名称、数量、单位、分类
+3. 推断合理的保质期天数
+4. 估算每100g的卡路里（calories，单位：kcal）
+5. 对不确定的字段标记 confidence 为 low
+6. 回复必须是 JSON 格式，不要包含其他文字
+
+输出格式：
+{{"items":[{{"name":"食材名称","quantity":1,"unit":"个","category":"vegetable","expiry_days":5,"calories":30,"confidence":"high"}}]}}"""

@@ -63,6 +63,7 @@ class FoodItem(models.Model):
         related_name='added_items', verbose_name='录入人'
     )
     note = models.TextField('备注', blank=True, default='')
+    calories = models.IntegerField('卡路里(每100g)', null=True, blank=True, help_text='单位：kcal/100g')
     is_consumed = models.BooleanField('是否已消耗', default=False)
     consumed_at = models.DateTimeField('消耗时间', null=True, blank=True)
     created_at = models.DateTimeField('录入时间', auto_now_add=True)
