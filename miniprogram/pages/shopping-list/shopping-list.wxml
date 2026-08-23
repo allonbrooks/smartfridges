@@ -39,8 +39,14 @@
   <view wx:if="{{showAdd}}" class="modal-mask" bindtap="hideAddDialog">
     <view class="modal-content" catchtap="noop">
       <text class="modal-title">添加商品</text>
-      <input class="modal-input" placeholder="商品名称" value="{{newItemName}}" bindinput="onNameInput" />
-      <input class="modal-input" placeholder="数量" type="number" value="{{newItemQuantity}}" bindinput="onQuantityInput" />
+      <view class="form-group">
+        <text class="form-label">商品名称</text>
+        <input class="form-input" placeholder="如：牛奶、鸡蛋" value="{{newItemName}}" bindinput="onNameInput" />
+      </view>
+      <view class="form-group">
+        <text class="form-label">数量</text>
+        <input class="form-input" placeholder="例：2" value="{{newItemQuantity}}" type="number" bindinput="onQuantityInput" />
+      </view>
       <view class="modal-actions">
         <button class="btn-cancel" bindtap="hideAddDialog">取消</button>
         <button class="btn-confirm" bindtap="addItem">添加</button>

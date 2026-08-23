@@ -32,12 +32,16 @@
   <view wx:if="{{showCreate}}" class="modal-mask" bindtap="hideCreateDialog">
     <view class="modal-content" catchtap="noop">
       <text class="modal-title">新建空间</text>
-      <input class="modal-input" placeholder="空间名称" value="{{newName}}" bindinput="onNameInput" />
-      <picker mode="selector" range="{{typeOptions}}" range-key="label" value="{{typeIndex}}" bindchange="onTypeChange">
-        <view class="picker">
-          <text>{{newTypeLabel}}</text>
-        </view>
-      </picker>
+      <view class="form-group">
+        <text class="form-label">空间名称</text>
+        <input class="form-input" placeholder="如：冷藏区、冷冻区" value="{{newName}}" bindinput="onNameInput" />
+      </view>
+      <view class="form-group">
+        <text class="form-label">空间类型</text>
+        <picker mode="selector" range="{{typeOptions}}" range-key="label" value="{{typeIndex}}" bindchange="onTypeChange">
+          <view class="form-input picker-input">{{newTypeLabel}}</view>
+        </picker>
+      </view>
       <view class="modal-actions">
         <button class="btn-cancel" bindtap="hideCreateDialog">取消</button>
         <button class="btn-confirm" bindtap="createSpace">创建</button>
