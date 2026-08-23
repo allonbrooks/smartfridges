@@ -17,7 +17,7 @@
     >
       <text class="name">{{item.name}}</text>
       <text class="qty">{{item.quantity}}{{item.unit || '个'}}</text>
-      <text wx:if="{{selectedIds.indexOf(item.id) > -1}}" class="checked-badge">✓</text>
+      <view wx:if="{{selectedIds.indexOf(item.id) > -1}}" class="checked-badge">✓</view>
     </view>
   </view>
 

@@ -1,4 +1,4 @@
-/* AI 菜谱页 */
+/* AI 菜谱页 - v2 */
 .page { padding-bottom: 40rpx; }
 .section-title {
   font-size: 28rpx;
