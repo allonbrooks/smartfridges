@@ -53,7 +53,7 @@ class FoodItemCreateSerializer(serializers.ModelSerializer):
             'quantity', 'unit', 'expiry_date', 'days_to_expire', 'note',
         ]
 
-        def validate(self, attrs):
+    def validate(self, attrs):
         from datetime import date, timedelta
         if 'expiry_date' not in attrs and 'days_to_expire' in attrs:
             attrs['expiry_date'] = date.today() + timedelta(days=attrs['days_to_expire'])
