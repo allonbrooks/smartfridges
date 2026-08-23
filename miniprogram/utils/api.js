@@ -54,6 +54,8 @@ const spaces = {
   list: () => request('/api/spaces'),
   create: (name, zone_type) => request('/api/spaces', { method: 'POST', data: { name, zone_type } }),
   detail: (id) => request(`/api/spaces/${id}`),
+  update: (id, data) => request(`/api/spaces/${id}`, { method: 'PUT', data }),
+  delete: (id, moveTo) => request(`/api/spaces/${id}${moveTo ? `?move_to=${moveTo}` : ''}`, { method: 'DELETE' }),
 }
 
 // 物品 API
@@ -63,6 +65,7 @@ const items = {
   create: (data) => request('/api/items', { method: 'POST', data }),
   batchCreate: (data) => request('/api/items/batch', { method: 'POST', data }),
   detail: (id) => request(`/api/items/${id}`),
+  update: (id, data) => request(`/api/items/${id}`, { method: 'PATCH', data }),
   consume: (id, quantity) => request(`/api/items/${id}/consume`, { method: 'PATCH', data: { quantity } }),
   delete: (id) => request(`/api/items/${id}`, { method: 'DELETE' }),
   barcode: (code) => request('/api/items/barcode', { method: 'POST', data: { barcode: code } }),

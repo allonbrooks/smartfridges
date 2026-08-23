@@ -23,10 +23,16 @@
         <text class="item-meta">到期 {{item.expiryDisplay}} · {{item.createdDisplay}} 录入</text>
       </view>
       <view class="item-actions">
+        <view class="action edit" data-id="{{item.id}}" catchtap="onEditItem">编辑</view>
         <view class="action consume" data-id="{{item.id}}" catchtap="onConsume">消耗</view>
         <view class="action delete" data-id="{{item.id}}" catchtap="onDelete">删除</view>
       </view>
     </view>
+  </view>
+
+  <!-- 删除空间 -->
+  <view class="delete-space" bindtap="onDeleteSpace">
+    <text>删除此空间</text>
   </view>
 
   <!-- 添加弹窗 -->
@@ -55,6 +61,63 @@
       <view class="modal-actions">
         <button class="btn-cancel" bindtap="hideAddDialog">取消</button>
         <button class="btn-confirm" bindtap="addItem">添加</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑弹窗 -->
+  <view wx:if="{{showEdit}}" class="modal-mask" bindtap="hideEditDialog">
+    <view class="modal-content" catchtap="noop">
+      <text class="modal-title">编辑物品</text>
+
+      <view class="form-group">
+        <text class="form-label">物品名称</text>
+        <input class="form-input" placeholder="如：牛奶、鸡蛋、番茄" value="{{editName}}" bindinput="onEditNameInput" />
+      </view>
+
+      <view class="form-row">
+        <view class="form-group half">
+          <text class="form-label">数量</text>
+          <input class="form-input" placeholder="例：2" value="{{editQuantity}}" type="number" bindinput="onEditQuantityInput" />
+        </view>
+        <view class="form-group half">
+          <text class="form-label">过期日期</text>
+          <picker mode="date" value="{{editExpiryDate}}" bindchange="onEditExpiryDateChange">
+            <view class="form-input picker-input">{{editExpiryDate}}</view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">存放空间</text>
+        <picker mode="selector" range="{{allSpaces}}" range-key="name" value="{{editSpaceIndex}}" bindchange="onEditSpaceChange">
+          <view class="form-input picker-input">{{allSpaces[editSpaceIndex].name}}</view>
+        </picker>
+      </view>
+
+      <view class="modal-actions">
+        <button class="btn-cancel" bindtap="hideEditDialog">取消</button>
+        <button class="btn-confirm" bindtap="updateItem">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 删除空间弹窗 -->
+  <view wx:if="{{showDeleteSpace}}" class="modal-mask" bindtap="hideDeleteSpaceDialog">
+    <view class="modal-content" catchtap="noop">
+      <text class="modal-title">删除空间</text>
+      <text class="modal-desc">该空间有 {{items.length}} 件物品，请选择要迁移到的目标空间：</text>
+
+      <view class="form-group">
+        <text class="form-label">目标空间</text>
+        <picker mode="selector" range="{{allSpaces.filter(s => s.id !== spaceId)}}" range-key="name" value="{{0}}" bindchange="onMoveToChange">
+          <view class="form-input picker-input">{{selectedMoveTo ? (allSpaces.find(s => s.id === selectedMoveTo) || {}).name : '请选择'}}</view>
+        </picker>
+      </view>
+
+      <view class="modal-actions">
+        <button class="btn-cancel" bindtap="hideDeleteSpaceDialog">取消</button>
+        <button class="btn-confirm btn-danger" bindtap="confirmDeleteSpace">确认删除</button>
       </view>
     </view>
   </view>

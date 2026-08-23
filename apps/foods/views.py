@@ -68,10 +68,21 @@ def space_detail(request, space_id):
             'success': True,
         })
     if request.method == 'DELETE':
-        # 检查是否有物品
+        # 支持 move_to 参数，将物品迁移到其他空间后再删除
+        user = request.wx_user
+        move_to = request.query_params.get('move_to')
         if space.items.exists():
-            return Response({'error': '该空间还有物品，请先移走', 'success': False}, status=400)
+            if move_to:
+                target = get_object_or_404(StorageSpace, id=move_to, family=family)
+                count = space.items.update(storage_space=target)
+                _log_operation(
+                    user, family, OperationLog.Action.MODIFY, None,
+                    f'删除空间「{space.name}」时迁移了 {count} 件物品到「{target.name}」'
+                )
+            else:
+                return Response({'error': '该空间还有物品，请先移走', 'success': False}, status=400)
         space.delete()
+        _log_operation(user, family, OperationLog.Action.DELETE, None, f'删除了空间「{space.name}」')
         return Response({'success': True})
     # PUT
     serializer = StorageSpaceSerializer(space, data=request.data, partial=True)
