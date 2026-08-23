@@ -52,7 +52,7 @@ const families = {
 // 空间 API
 const spaces = {
   list: () => request('/api/spaces'),
-  create: (name, type) => request('/api/spaces/create', { method: 'POST', data: { name, type } }),
+  create: (name, zone_type) => request('/api/spaces/create', { method: 'POST', data: { name, zone_type } }),
   detail: (id) => request(`/api/spaces/${id}`),
 }
 

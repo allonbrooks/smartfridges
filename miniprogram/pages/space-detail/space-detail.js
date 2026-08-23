@@ -1,0 +1,130 @@
+const api = require('../../utils/api')
+
+Page({
+  data: {
+    space: null,
+    items: [],
+    loading: true,
+    spaceId: '',
+    showAdd: false,
+    newName: '',
+    newQuantity: 1,
+    newExpiryDays: 7,
+  },
+
+  onLoad(options) {
+    this.setData({
+      spaceId: options.spaceId || '',
+      itemId: options.itemId || '',
+    })
+  },
+
+  noop() {},
+
+  onShow() {
+    if (this.data.spaceId) {
+      this.loadSpaceDetail()
+    } else if (this.data.itemId) {
+      this.loadItemDetail()
+    }
+  },
+
+  async loadSpaceDetail() {
+    this.setData({ loading: true })
+    try {
+      const res = await api.spaces.detail(this.data.spaceId)
+      if (res.success) {
+        this.setData({
+          space: res.data.space,
+          items: res.data.items || [],
+        })
+        wx.setNavigationBarTitle({ title: res.data.space.name })
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      this.setData({ loading: false })
+    }
+  },
+
+  async loadItemDetail() {
+    this.setData({ loading: true })
+    try {
+      const res = await api.items.detail(this.data.itemId)
+      if (res.success) {
+        this.setData({
+          items: [res.data],
+          space: { name: '物品详情' },
+        })
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      this.setData({ loading: false })
+    }
+  },
+
+  showAddDialog() {
+    this.setData({ showAdd: true, newName: '', newQuantity: 1, newExpiryDays: 7 })
+  },
+
+  hideAddDialog() {
+    this.setData({ showAdd: false })
+  },
+
+  onNameInput(e) { this.setData({ newName: e.detail.value }) },
+  onQuantityInput(e) { this.setData({ newQuantity: Number(e.detail.value) || 1 }) },
+  onExpiryInput(e) { this.setData({ newExpiryDays: Number(e.detail.value) || 7 }) },
+
+  async addItem() {
+    if (!this.data.newName.trim()) {
+      wx.showToast({ title: '请输入名称', icon: 'none' })
+      return
+    }
+    try {
+      const res = await api.items.create({
+        name: this.data.newName.trim(),
+        quantity: this.data.newQuantity,
+        days_to_expire: this.data.newExpiryDays,
+        storage_space: this.data.spaceId,
+      })
+      if (res.success) {
+        wx.showToast({ title: '添加成功', icon: 'success' })
+        this.hideAddDialog()
+        this.loadSpaceDetail()
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  },
+
+  onConsume(e) {
+    const id = e.currentTarget.dataset.id
+    wx.showActionSheet({
+      itemList: ['消耗1个', '消耗全部'],
+      success: (res) => {
+        const quantity = res.tapIndex === 0 ? 1 : 999
+        api.items.consume(id, quantity).then(() => {
+          wx.showToast({ title: '已消耗', icon: 'success' })
+          this.loadSpaceDetail()
+        })
+      }
+    })
+  },
+
+  onDelete(e) {
+    const id = e.currentTarget.dataset.id
+    wx.showModal({
+      title: '确认',
+      content: '确定要删除该物品吗？',
+      success: (res) => {
+        if (res.confirm) {
+          api.items.delete(id).then(() => {
+            wx.showToast({ title: '已删除', icon: 'success' })
+            this.loadSpaceDetail()
+          })
+        }
+      }
+    })
+  },
+})

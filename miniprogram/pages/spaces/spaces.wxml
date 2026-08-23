@@ -1,0 +1,47 @@
+<!-- 空间列表 -->
+<view class="page">
+  <!-- 创建按钮 -->
+  <view class="add-btn" bindtap="showCreateDialog">
+    <text>＋ 新建空间</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <view wx:elif="{{spaces.length === 0}}" class="empty-state">
+    <text class="icon">🗄️</text>
+    <text>还没有存储空间，点击上方按钮创建</text>
+  </view>
+
+  <view wx:else class="space-grid">
+    <view
+      class="space-card"
+      wx:for="{{spaces}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="goSpaceDetail"
+    >
+      <view class="space-type type-{{item.zone_type}}">
+        <text class="space-icon">{{item.typeIcon}}</text>
+      </view>
+      <text class="space-name">{{item.name}}</text>
+      <text class="space-count">{{item.item_count || 0}} 件物品</text>
+    </view>
+  </view>
+
+  <!-- 创建弹窗 -->
+  <view wx:if="{{showCreate}}" class="modal-mask" bindtap="hideCreateDialog">
+    <view class="modal-content" catchtap="noop">
+      <text class="modal-title">新建空间</text>
+      <input class="modal-input" placeholder="空间名称" value="{{newName}}" bindinput="onNameInput" />
+      <picker mode="selector" range="{{typeOptions}}" range-key="label" value="{{typeIndex}}" bindchange="onTypeChange">
+        <view class="picker">
+          <text>{{newTypeLabel}}</text>
+        </view>
+      </picker>
+      <view class="modal-actions">
+        <button class="btn-cancel" bindtap="hideCreateDialog">取消</button>
+        <button class="btn-confirm" bindtap="createSpace">创建</button>
+      </view>
+    </view>
+  </view>
+</view>

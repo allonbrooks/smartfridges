@@ -1,0 +1,126 @@
+/* 空间页面 */
+.page { padding-bottom: 20rpx; }
+
+.add-btn {
+  margin: 20rpx;
+  padding: 28rpx;
+  text-align: center;
+  background: #fff;
+  border-radius: 16rpx;
+  color: #07c160;
+  font-size: 28rpx;
+  font-weight: 500;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+}
+
+.space-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  margin: 0 20rpx;
+}
+
+.space-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx 20rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+}
+
+.space-type {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16rpx;
+}
+
+.type-cold { background: #e6f7ff; }
+.type-frozen { background: #f0f5ff; }
+.type-normal { background: #fff7e6; }
+
+.space-icon { font-size: 48rpx; }
+
+.space-name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.space-count {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 弹窗 */
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  width: 600rpx;
+}
+
+.modal-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 24rpx;
+  text-align: center;
+}
+
+.modal-input {
+  border: 1px solid #eee;
+  border-radius: 10rpx;
+  padding: 24rpx;
+  font-size: 32rpx;
+  margin-bottom: 24rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.picker {
+  border: 1px solid #eee;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  margin-bottom: 24rpx;
+  color: #333;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.btn-cancel, .btn-confirm {
+  flex: 1;
+  padding: 20rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+.btn-cancel {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.btn-confirm {
+  background: #07c160;
+  color: #fff;
+}

@@ -33,7 +33,12 @@ def list_spaces(request):
         return Response({'error': '未加入家庭', 'success': False}, status=404)
     spaces = StorageSpace.objects.filter(family=family)
     serializer = StorageSpaceSerializer(spaces, many=True)
-    return Response({'data': serializer.data, 'success': True})
+    data = serializer.data
+    for d in data:
+        d['item_count'] = FoodItem.objects.filter(
+            storage_space_id=d['id'], family=family, is_consumed=False
+        ).count()
+    return Response({'data': data, 'success': True})
 
 
 @api_view(['POST'])
