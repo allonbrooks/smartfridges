@@ -17,7 +17,7 @@
     >
       <text class="name">{{item.name}}</text>
       <text class="qty">{{item.quantity}}{{item.unit || '个'}}</text>
-      <view wx:if="{{selectedIds.indexOf(item.id) > -1}}" class="checked-badge">✓</view>
+      <text wx:if="{{selectedIds.indexOf(item.id) > -1}}" class="checked-badge">✓</text>
     </view>
   </view>
 
@@ -26,7 +26,7 @@
   </view>
 
   <button
-    class="btn-primary generate-btn"
+    class="btn-primary generate-btn {{loading || selectedIds.length === 0 ? 'btn-disabled' : ''}}"
     disabled="{{loading || selectedIds.length === 0}}"
     loading="{{loading}}"
     bindtap="generateRecipe"
