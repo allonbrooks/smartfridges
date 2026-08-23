@@ -13,11 +13,12 @@ class FoodItemSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
     days_remaining = serializers.SerializerMethodField()
     added_by_name = serializers.CharField(source='added_by.nickname', read_only=True, default='')
+    space_name = serializers.CharField(source='storage_space.name', read_only=True, default='')
 
     class Meta:
         model = FoodItem
         fields = [
-            'id', 'name', 'category', 'storage_space_id', 'barcode', 'icon',
+            'id', 'name', 'category', 'storage_space_id', 'space_name', 'barcode', 'icon',
             'quantity', 'unit', 'expiry_date', 'days_to_expire',
             'added_by', 'added_by_name', 'note', 'is_consumed',
             'consumed_at', 'status', 'days_remaining', 'created_at', 'updated_at',
