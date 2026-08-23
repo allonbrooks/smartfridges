@@ -48,13 +48,26 @@ def create_space(request):
     return Response({'data': serializer.data, 'success': True}, status=201)
 
 
-@api_view(['PUT', 'DELETE'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def space_detail(request, space_id):
-    """编辑/删除空间"""
+    """查看/编辑/删除空间"""
     family = request.wx_family
     if not family:
         return Response({'error': '未加入家庭', 'success': False}, status=404)
     space = get_object_or_404(StorageSpace, id=space_id, family=family)
+    if request.method == 'GET':
+        items = FoodItem.objects.filter(
+            family=family, storage_space=space, is_consumed=False
+        ).select_related('storage_space', 'added_by').order_by('expiry_date')
+        space_serializer = StorageSpaceSerializer(space)
+        item_serializer = FoodItemSerializer(items, many=True)
+        return Response({
+            'data': {
+                'space': space_serializer.data,
+                'items': item_serializer.data,
+            },
+            'success': True,
+        })
     if request.method == 'DELETE':
         # 检查是否有物品
         if space.items.exists():
