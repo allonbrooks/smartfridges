@@ -1,0 +1,52 @@
+<!-- AI 菜谱 -->
+<view class="page">
+  <view class="section-title">选择冰箱里的食材（至少3样）</view>
+
+  <view wx:if="{{items.length === 0}}" class="empty-state">
+    <text class="icon">🍳</text>
+    <text>冰箱里还没有食材，先去添加吧</text>
+  </view>
+
+  <view wx:else class="ingredient-grid">
+    <view
+      class="ingredient {{selectedIds.indexOf(item.id) > -1 ? 'selected' : ''}}"
+      wx:for="{{items}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="toggleItem"
+    >
+      <text class="name">{{item.name}}</text>
+      <text class="qty">{{item.quantity}}{{item.unit || '个'}}</text>
+    </view>
+  </view>
+
+  <button
+    class="btn-primary generate-btn"
+    disabled="{{loading || selectedIds.length === 0}}"
+    loading="{{loading}}"
+    bindtap="generateRecipe"
+  >
+    {{loading ? '生成中...' : '生成菜谱'}}
+  </button>
+
+  <view wx:if="{{error}}" class="error-msg">{{error}}</view>
+
+  <view wx:if="{{recipe}}" class="recipe-card">
+    <text class="recipe-title">{{recipe.name}}</text>
+    <text class="recipe-desc">{{recipe.description}}</text>
+
+    <view class="recipe-section">
+      <text class="section-label">所需食材：</text>
+      <view wx:for="{{recipe.ingredients}}" wx:key="*this" class="ingredient-item">
+        <text>- {{item}}</text>
+      </view>
+    </view>
+
+    <view class="recipe-section">
+      <text class="section-label">步骤：</text>
+      <view wx:for="{{recipe.steps}}" wx:key="*this">
+        <text class="step-item">{{index + 1}}. {{item}}</text>
+      </view>
+    </view>
+  </view>
+</view>

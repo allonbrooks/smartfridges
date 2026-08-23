@@ -1,0 +1,83 @@
+<!-- 首页 -->
+<view class="page">
+  <!-- 状态概要 -->
+  <view class="summary-bar">
+    <view class="summary-item safe" bindtap="goSpaces">
+      <text class="num">{{safeCount}}</text>
+      <text class="label">充足</text>
+    </view>
+    <view class="summary-item expiring" bindtap="goSpaces">
+      <text class="num">{{expiringCount}}</text>
+      <text class="label">临期</text>
+    </view>
+    <view class="summary-item expired" bindtap="goSpaces">
+      <text class="num">{{expiredCount}}</text>
+      <text class="label">过期</text>
+    </view>
+  </view>
+
+  <!-- 快捷录入 -->
+  <view class="quick-actions">
+    <view class="action-btn scan" bindtap="scanBarcode">
+      <text class="icon">📷</text>
+      <text>扫条码</text>
+    </view>
+    <view class="action-btn voice" bindtap="voiceInput">
+      <text class="icon">🎤</text>
+      <text>语音输入</text>
+    </view>
+  </view>
+
+  <view class="section-title">物品清单</view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <view wx:elif="{{!hasFamily}}" class="empty-state">
+    <text class="icon">🏠</text>
+    <text>请先创建家庭组</text>
+    <button class="btn-primary" bindtap="showCreateDialog" style="margin-top: 32rpx;">创建家庭</button>
+  </view>
+
+  <view wx:elif="{{items.length === 0}}" class="empty-state">
+    <text class="icon">📦</text>
+    <text>冰箱里还没有东西，快去添加吧</text>
+  </view>
+
+  <view wx:else class="item-list">
+    <view
+      class="item-card"
+      wx:for="{{items}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onItemTap"
+    >
+      <view class="item-status status-{{item.status}}"></view>
+      <view class="item-body">
+        <text class="item-name">{{item.name}}</text>
+        <text class="item-detail">
+          {{item.quantity}}{{item.unit || '个'}} · {{item.space_name || '未分类'}}
+        </text>
+        <text class="item-expiry status-{{item.status}}">
+          {{item.status === 'red' ? '已过期' + (-item.days_remaining) + '天' : item.status === 'yellow' ? '剩' + item.days_remaining + '天' : '充足'}}
+        </text>
+        <text class="item-meta">到期 {{item.expiryDisplay}} · {{item.createdDisplay}} 录入</text>
+      </view>
+      <view class="item-actions">
+        <view class="consume-btn" data-id="{{item.id}}" catchtap="onConsume">消耗</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 创建家庭弹窗 -->
+  <view wx:if="{{showCreateFamily}}" class="modal-mask" bindtap="hideCreateDialog">
+    <view class="modal-content" catchtap="noop">
+      <text class="modal-title">创建家庭组</text>
+      <text class="modal-desc">创建家庭组后，可以邀请家人一起管理冰箱</text>
+      <input class="modal-input" placeholder="家庭名称（如：我的家）" value="{{familyName}}" bindinput="onFamilyNameInput" />
+      <view class="modal-actions">
+        <button class="btn-cancel" bindtap="hideCreateDialog">取消</button>
+        <button class="btn-confirm" bindtap="createFamily">创建</button>
+      </view>
+    </view>
+  </view>
+</view>

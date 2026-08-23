@@ -34,9 +34,14 @@ Page({
     try {
       const res = await api.spaces.detail(this.data.spaceId)
       if (res.success) {
+        const items = (res.data.items || []).map(item => ({
+          ...item,
+          expiryDisplay: item.expiry_date ? item.expiry_date.slice(5) : '',
+          createdDisplay: item.created_at ? item.created_at.split('T')[0].slice(5) : '',
+        }))
         this.setData({
           space: res.data.space,
-          items: res.data.items || [],
+          items,
         })
         wx.setNavigationBarTitle({ title: res.data.space.name })
       }
@@ -52,8 +57,13 @@ Page({
     try {
       const res = await api.items.detail(this.data.itemId)
       if (res.success) {
+        const item = {
+          ...res.data,
+          expiryDisplay: res.data.expiry_date ? res.data.expiry_date.slice(5) : '',
+          createdDisplay: res.data.created_at ? res.data.created_at.split('T')[0].slice(5) : '',
+        }
         this.setData({
-          items: [res.data],
+          items: [item],
           space: { name: '物品详情' },
         })
       }

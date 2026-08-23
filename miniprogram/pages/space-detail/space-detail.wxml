@@ -1,0 +1,47 @@
+<!-- 空间详情 -->
+<view class="page">
+  <view class="add-btn" bindtap="showAddDialog">
+    <text>＋ 添加物品</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <view wx:elif="{{items.length === 0}}" class="empty-state">
+    <text class="icon">📦</text>
+    <text>这个空间还没有物品</text>
+  </view>
+
+  <view wx:else class="item-list">
+    <view class="item-card" wx:for="{{items}}" wx:key="id" data-id="{{item.id}}">
+      <view class="item-status status-{{item.status}}"></view>
+      <view class="item-body">
+        <text class="item-name">{{item.name}}</text>
+        <text class="item-detail">{{item.quantity}}{{item.unit || '个'}} · {{item.category || '未分类'}}</text>
+        <text class="item-expiry status-{{item.status}}">
+          {{item.status === 'red' ? '已过期' + (-item.days_remaining) + '天' : item.status === 'yellow' ? '剩' + item.days_remaining + '天' : '保质期充足'}}
+        </text>
+        <text class="item-meta">到期 {{item.expiryDisplay}} · {{item.createdDisplay}} 录入</text>
+      </view>
+      <view class="item-actions">
+        <view class="action consume" data-id="{{item.id}}" catchtap="onConsume">消耗</view>
+        <view class="action delete" data-id="{{item.id}}" catchtap="onDelete">删除</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加弹窗 -->
+  <view wx:if="{{showAdd}}" class="modal-mask" bindtap="hideAddDialog">
+    <view class="modal-content" catchtap="noop">
+      <text class="modal-title">添加物品</text>
+      <input class="modal-input" placeholder="物品名称" value="{{newName}}" bindinput="onNameInput" />
+      <view class="modal-row">
+        <input class="modal-input half" placeholder="数量" value="{{newQuantity}}" type="number" bindinput="onQuantityInput" />
+        <input class="modal-input half" placeholder="保质期(天)" value="{{newExpiryDays}}" type="number" bindinput="onExpiryInput" />
+      </view>
+      <view class="modal-actions">
+        <button class="btn-cancel" bindtap="hideAddDialog">取消</button>
+        <button class="btn-confirm" bindtap="addItem">添加</button>
+      </view>
+    </view>
+  </view>
+</view>

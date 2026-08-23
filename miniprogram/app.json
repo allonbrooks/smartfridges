@@ -1,0 +1,49 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/spaces/spaces",
+    "pages/space-detail/space-detail",
+    "pages/ai-recipe/ai-recipe",
+    "pages/shopping-list/shopping-list"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "冰箱管家",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f5f5f5"
+  },
+  "tabBar": {
+    "color": "#999",
+    "selectedColor": "#07c160",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页",
+        "iconPath": "images/home.png",
+        "selectedIconPath": "images/home-active.png"
+      },
+      {
+        "pagePath": "pages/spaces/spaces",
+        "text": "空间",
+        "iconPath": "images/spaces.png",
+        "selectedIconPath": "images/spaces-active.png"
+      },
+      {
+        "pagePath": "pages/ai-recipe/ai-recipe",
+        "text": "AI菜谱",
+        "iconPath": "images/recipe.png",
+        "selectedIconPath": "images/recipe-active.png"
+      },
+      {
+        "pagePath": "pages/shopping-list/shopping-list",
+        "text": "购物清单",
+        "iconPath": "images/shopping.png",
+        "selectedIconPath": "images/shopping-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}
