@@ -32,13 +32,22 @@
   <view wx:if="{{error}}" class="error-msg">{{error}}</view>
 
   <view wx:if="{{recipe}}" class="recipe-card">
-    <text class="recipe-title">{{recipe.name}}</text>
-    <text class="recipe-desc">{{recipe.description}}</text>
+    <text class="recipe-title">{{recipe.title}}</text>
+    <text class="recipe-desc">预计 {{recipe.estimated_time}} · {{recipe.ingredients.length}} 种食材</text>
+
+    <block wx:if="{{recipe.missing_items && recipe.missing_items.length > 0}}">
+      <view class="recipe-section">
+        <text class="section-label missing-label">缺少的食材：</text>
+        <view wx:for="{{recipe.missing_items}}" wx:key="*this" class="ingredient-item missing-item">
+          <text>- {{item}} <text class="hint">(可加入购物清单)</text></text>
+        </view>
+      </view>
+    </block>
 
     <view class="recipe-section">
-      <text class="section-label">所需食材：</text>
-      <view wx:for="{{recipe.ingredients}}" wx:key="*this" class="ingredient-item">
-        <text>- {{item}}</text>
+      <text class="section-label">食材清单：</text>
+      <view wx:for="{{recipe.ingredients}}" wx:key="index" class="ingredient-item">
+        <text>- {{item.name}} x{{item.quantity}}{{item.unit}} {{item.in_fridge ? '✅' : '❌'}}</text>
       </view>
     </view>
 

@@ -84,4 +84,7 @@
 .recipe-section { margin-bottom: 20rpx; }
 .section-label { font-size: 28rpx; font-weight: 600; display: block; margin-bottom: 8rpx; }
 .ingredient-item { font-size: 26rpx; color: #666; padding: 4rpx 0; }
+.missing-label { color: #faad14; }
+.missing-item { color: #faad14; }
+.hint { font-size: 22rpx; color: #999; }
 .step-item { font-size: 26rpx; color: #333; line-height: 1.6; padding: 6rpx 0; display: block; }

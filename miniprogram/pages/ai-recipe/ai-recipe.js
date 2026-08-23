@@ -20,13 +20,14 @@ Page({
         this.setData({ items: res.data || [] })
       }
     } catch (e) {
-      console.error(e)
+      console.error('loadItems error:', e)
+      this.setData({ error: '加载食材失败' })
     }
   },
 
   toggleItem(e) {
     const id = e.currentTarget.dataset.id
-    const selected = this.data.selectedIds
+    const selected = [...this.data.selectedIds]
     const idx = selected.indexOf(id)
     if (idx > -1) {
       selected.splice(idx, 1)
@@ -45,7 +46,7 @@ Page({
     try {
       const res = await api.recipes.generate(this.data.selectedIds)
       if (res.success) {
-        this.setData({ recipe: res.data })
+        this.setData({ recipe: res.data.recipe })
       } else {
         this.setData({ error: res.error || '生成失败' })
       }
