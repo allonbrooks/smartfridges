@@ -14,7 +14,7 @@ Page({
     spaceId: '',
     showAdd: false,
     newName: '',
-    newQuantity: 1,
+    newQuantity: '1',
     newExpiryDate: addDays(7),
   },
 
@@ -81,7 +81,7 @@ Page({
   },
 
   showAddDialog() {
-    this.setData({ showAdd: true, newName: '', newQuantity: 1, newExpiryDate: addDays(7) })
+    this.setData({ showAdd: true, newName: '', newQuantity: '1', newExpiryDate: addDays(7) })
   },
 
   hideAddDialog() {
@@ -89,7 +89,7 @@ Page({
   },
 
   onNameInput(e) { this.setData({ newName: e.detail.value }) },
-  onQuantityInput(e) { this.setData({ newQuantity: Number(e.detail.value) || 1 }) },
+  onQuantityInput(e) { this.setData({ newQuantity: e.detail.value }) },
   onExpiryDateChange(e) { this.setData({ newExpiryDate: e.detail.value }) },
 
   async addItem() {
@@ -100,7 +100,7 @@ Page({
     try {
       const res = await api.items.create({
         name: this.data.newName.trim(),
-        quantity: this.data.newQuantity,
+        quantity: Number(this.data.newQuantity) || 1,
         expiry_date: this.data.newExpiryDate,
         storage_space: this.data.spaceId,
       })

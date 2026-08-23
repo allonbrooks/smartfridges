@@ -5,7 +5,7 @@ Page({
     items: [],
     loading: true,
     newItemName: '',
-    newItemQuantity: 1,
+    newItemQuantity: '1',
     showAdd: false,
   },
 
@@ -42,7 +42,7 @@ Page({
   },
 
   onNameInput(e) { this.setData({ newItemName: e.detail.value }) },
-  onQuantityInput(e) { this.setData({ newItemQuantity: Number(e.detail.value) || 1 }) },
+  onQuantityInput(e) { this.setData({ newItemQuantity: e.detail.value }) },
 
   async addItem() {
     if (!this.data.newItemName.trim()) {
@@ -52,7 +52,7 @@ Page({
     try {
       const res = await api.shopping.create({
         item_name: this.data.newItemName.trim(),
-        quantity: this.data.newItemQuantity,
+        quantity: Number(this.data.newItemQuantity) || 1,
       })
       if (res.success) {
         wx.showToast({ title: '已添加', icon: 'success' })
