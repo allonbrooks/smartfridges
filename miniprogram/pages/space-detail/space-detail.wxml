@@ -33,11 +33,25 @@
   <view wx:if="{{showAdd}}" class="modal-mask" bindtap="hideAddDialog">
     <view class="modal-content" catchtap="noop">
       <text class="modal-title">添加物品</text>
-      <input class="modal-input" placeholder="物品名称" value="{{newName}}" bindinput="onNameInput" />
-      <view class="modal-row">
-        <input class="modal-input half" placeholder="数量" value="{{newQuantity}}" type="number" bindinput="onQuantityInput" />
-        <input class="modal-input half" placeholder="保质期(天)" value="{{newExpiryDays}}" type="number" bindinput="onExpiryInput" />
+
+      <view class="form-group">
+        <text class="form-label">物品名称</text>
+        <input class="form-input" placeholder="如：牛奶、鸡蛋、番茄" value="{{newName}}" bindinput="onNameInput" />
       </view>
+
+      <view class="form-row">
+        <view class="form-group half">
+          <text class="form-label">数量</text>
+          <input class="form-input" placeholder="例：2" value="{{newQuantity}}" type="number" bindinput="onQuantityInput" />
+        </view>
+        <view class="form-group half">
+          <text class="form-label">过期日期</text>
+          <picker mode="date" value="{{newExpiryDate}}" bindchange="onExpiryDateChange">
+            <view class="form-input picker-input">{{newExpiryDate}}</view>
+          </picker>
+        </view>
+      </view>
+
       <view class="modal-actions">
         <button class="btn-cancel" bindtap="hideAddDialog">取消</button>
         <button class="btn-confirm" bindtap="addItem">添加</button>

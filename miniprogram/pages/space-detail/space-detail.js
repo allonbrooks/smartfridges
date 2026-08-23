@@ -1,5 +1,11 @@
 const api = require('../../utils/api')
 
+function addDays(n) {
+  const d = new Date()
+  d.setDate(d.getDate() + n)
+  return d.toISOString().split('T')[0]
+}
+
 Page({
   data: {
     space: null,
@@ -9,7 +15,7 @@ Page({
     showAdd: false,
     newName: '',
     newQuantity: 1,
-    newExpiryDays: 7,
+    newExpiryDate: addDays(7),
   },
 
   onLoad(options) {
@@ -75,7 +81,7 @@ Page({
   },
 
   showAddDialog() {
-    this.setData({ showAdd: true, newName: '', newQuantity: 1, newExpiryDays: 7 })
+    this.setData({ showAdd: true, newName: '', newQuantity: 1, newExpiryDate: addDays(7) })
   },
 
   hideAddDialog() {
@@ -84,18 +90,18 @@ Page({
 
   onNameInput(e) { this.setData({ newName: e.detail.value }) },
   onQuantityInput(e) { this.setData({ newQuantity: Number(e.detail.value) || 1 }) },
-  onExpiryInput(e) { this.setData({ newExpiryDays: Number(e.detail.value) || 7 }) },
+  onExpiryDateChange(e) { this.setData({ newExpiryDate: e.detail.value }) },
 
   async addItem() {
     if (!this.data.newName.trim()) {
-      wx.showToast({ title: '请输入名称', icon: 'none' })
+      wx.showToast({ title: '请输入物品名称', icon: 'none' })
       return
     }
     try {
       const res = await api.items.create({
         name: this.data.newName.trim(),
         quantity: this.data.newQuantity,
-        days_to_expire: this.data.newExpiryDays,
+        expiry_date: this.data.newExpiryDate,
         storage_space: this.data.spaceId,
       })
       if (res.success) {
