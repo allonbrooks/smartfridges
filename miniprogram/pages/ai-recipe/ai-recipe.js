@@ -27,6 +27,7 @@ Page({
 
   toggleItem(e) {
     const id = e.currentTarget.dataset.id
+    console.log('toggleItem:', id, 'selectedIds:', this.data.selectedIds)
     const selected = [...this.data.selectedIds]
     const idx = selected.indexOf(id)
     if (idx > -1) {
@@ -35,6 +36,7 @@ Page({
       selected.push(id)
     }
     this.setData({ selectedIds: selected, recipes: null, error: '' })
+    console.log('after toggle, selectedIds:', selected)
   },
 
   async generateRecipe() {
