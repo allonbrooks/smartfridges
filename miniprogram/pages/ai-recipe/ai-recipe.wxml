@@ -36,30 +36,36 @@
 
   <view wx:if="{{error}}" class="error-msg">{{error}}</view>
 
-  <view wx:if="{{recipe}}" class="recipe-card">
-    <text class="recipe-title">{{recipe.title}}</text>
-    <text class="recipe-desc">预计 {{recipe.estimated_time}} · {{recipe.ingredients.length}} 种食材</text>
+  <view wx:if="{{recipes && recipes.length > 0}}">
+    <view class="recipe-card" wx:for="{{recipes}}" wx:key="title">
+      <text class="recipe-title">{{item.title}}</text>
+      <view class="recipe-tags">
+        <text class="tag">{{item.suitable_for}}</text>
+        <text class="tag taste">{{item.taste}}</text>
+        <text class="tag time">{{item.estimated_time}}</text>
+      </view>
 
-    <block wx:if="{{recipe.missing_items && recipe.missing_items.length > 0}}">
+      <block wx:if="{{item.missing_items && item.missing_items.length > 0}}">
+        <view class="recipe-section">
+          <text class="section-label missing-label">缺少的食材：</text>
+          <view wx:for="{{item.missing_items}}" wx:key="*this" class="ingredient-item missing-item">
+            <text>- {{item}} <text class="hint">(可加入购物清单)</text></text>
+          </view>
+        </view>
+      </block>
+
       <view class="recipe-section">
-        <text class="section-label missing-label">缺少的食材：</text>
-        <view wx:for="{{recipe.missing_items}}" wx:key="*this" class="ingredient-item missing-item">
-          <text>- {{item}} <text class="hint">(可加入购物清单)</text></text>
+        <text class="section-label">食材清单：</text>
+        <view wx:for="{{item.ingredients}}" wx:key="index" class="ingredient-item">
+          <text>- {{item.name}} x{{item.quantity}}{{item.unit}} {{item.in_fridge ? '✅' : '❌'}}</text>
         </view>
       </view>
-    </block>
 
-    <view class="recipe-section">
-      <text class="section-label">食材清单：</text>
-      <view wx:for="{{recipe.ingredients}}" wx:key="index" class="ingredient-item">
-        <text>- {{item.name}} x{{item.quantity}}{{item.unit}} {{item.in_fridge ? '✅' : '❌'}}</text>
-      </view>
-    </view>
-
-    <view class="recipe-section">
-      <text class="section-label">步骤：</text>
-      <view wx:for="{{recipe.steps}}" wx:key="*this">
-        <text class="step-item">{{index + 1}}. {{item}}</text>
+      <view class="recipe-section">
+        <text class="section-label">步骤：</text>
+        <view wx:for="{{item.steps}}" wx:key="*this">
+          <text class="step-item">{{index + 1}}. {{item}}</text>
+        </view>
       </view>
     </view>
   </view>

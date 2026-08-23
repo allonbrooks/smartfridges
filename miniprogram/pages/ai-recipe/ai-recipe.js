@@ -5,7 +5,7 @@ Page({
     items: [],
     selectedIds: [],
     loading: false,
-    recipe: null,
+    recipes: null,
     error: '',
   },
 
@@ -34,7 +34,7 @@ Page({
     } else {
       selected.push(id)
     }
-    this.setData({ selectedIds: selected, recipe: null, error: '' })
+    this.setData({ selectedIds: selected, recipes: null, error: '' })
   },
 
   async generateRecipe() {
@@ -42,11 +42,11 @@ Page({
       wx.showToast({ title: '请至少选择3样食材', icon: 'none' })
       return
     }
-    this.setData({ loading: true, recipe: null, error: '' })
+    this.setData({ loading: true, recipes: null, error: '' })
     try {
       const res = await api.recipes.generate(this.data.selectedIds)
       if (res.success) {
-        this.setData({ recipe: res.data.recipe })
+        this.setData({ recipes: res.data.recipes })
       } else {
         this.setData({ error: res.error || '生成失败' })
       }

@@ -84,12 +84,30 @@
 }
 
 .recipe-card {
-  margin: 0 20rpx;
+  margin: 0 20rpx 20rpx;
   background: #fff;
   border-radius: 16rpx;
   padding: 32rpx;
   box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
 }
+
+.recipe-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 20rpx;
+}
+
+.tag {
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  background: #f0f5ff;
+  color: #1890ff;
+}
+
+.tag.taste { background: #fff7e6; color: #fa8c16; }
+.tag.time { background: #f6ffed; color: #52c41a; }
 
 .recipe-title {
   display: block;

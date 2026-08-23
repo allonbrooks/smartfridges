@@ -18,4 +18,4 @@ def generate_recipe_view(request):
     )
     if 'error' in recipe:
         return Response({'error': recipe['error'], 'success': False}, status=400)
-    return Response({'data': {'recipe': recipe}, 'success': True})
+    return Response({'data': recipe, 'success': True})

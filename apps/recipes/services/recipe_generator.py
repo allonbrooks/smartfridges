@@ -11,11 +11,17 @@ def generate_recipe(item_ids: list, preferences: str = '') -> dict:
     根据冰箱食材生成菜谱。
 
     返回: {
-        'title': str,
-        'ingredients': [{'name': str, 'quantity': int, 'unit': str, 'in_fridge': bool}],
-        'missing_items': [str],
-        'steps': [str],
-        'estimated_time': str
+        'recipes': [
+            {
+                'title': str,
+                'ingredients': [{'name': str, 'quantity': int, 'unit': str, 'in_fridge': bool}],
+                'missing_items': [str],
+                'steps': [str],
+                'estimated_time': str,
+                'suitable_for': str,
+                'taste': str,
+            }
+        ]
     }
     """
     from apps.foods.models import FoodItem
@@ -36,32 +42,42 @@ def generate_recipe(item_ids: list, preferences: str = '') -> dict:
         ])
     except Exception as e:
         logger.error(f'LLM 调用失败: {e}')
-        return {
+        return _fallback_response(items)
+
+    try:
+        data = json.loads(result)
+        recipes = data.get('recipes', [data])  # 兼容单菜谱旧格式
+        for recipe in recipes:
+            recipe.setdefault('title', '自定义菜谱')
+            recipe.setdefault('ingredients', [])
+            recipe.setdefault('missing_items', [])
+            recipe.setdefault('steps', [])
+            recipe.setdefault('estimated_time', '30分钟')
+            recipe.setdefault('suitable_for', '适合全家')
+            recipe.setdefault('taste', '家常')
+            # 标记冰箱里已有的食材
+            fridge_names = {item.name for item in items}
+            for ing in recipe['ingredients']:
+                ing['in_fridge'] = ing['name'] in fridge_names
+        return {'recipes': recipes}
+    except (json.JSONDecodeError, TypeError) as e:
+        logger.error(f'菜谱生成 JSON 解析失败: {e}, 原始响应: {result}')
+        return _fallback_response(items)
+
+
+def _fallback_response(items):
+    """LLM 不可用时的兜底响应"""
+    return {
+        'recipes': [{
             'title': '解析失败',
-            'ingredients': [{'name': item.name, 'quantity': item.quantity, 'unit': item.unit, 'in_fridge': True} for item in items],
+            'ingredients': [
+                {'name': item.name, 'quantity': item.quantity, 'unit': item.unit, 'in_fridge': True}
+                for item in items
+            ],
             'missing_items': [],
             'steps': ['LLM 服务暂时不可用，请稍后重试'],
             'estimated_time': 'N/A',
-        }
-    try:
-        recipe = json.loads(result)
-        # 确保必填字段
-        recipe.setdefault('title', '自定义菜谱')
-        recipe.setdefault('ingredients', [])
-        recipe.setdefault('missing_items', [])
-        recipe.setdefault('steps', [])
-        recipe.setdefault('estimated_time', '30分钟')
-        # 标记冰箱里已有的食材
-        fridge_names = {item.name for item in items}
-        for ing in recipe['ingredients']:
-            ing['in_fridge'] = ing['name'] in fridge_names
-        return recipe
-    except (json.JSONDecodeError, TypeError) as e:
-        logger.error(f'菜谱生成 JSON 解析失败: {e}, 原始响应: {result}')
-        return {
-            'title': '解析失败',
-            'ingredients': [{'name': item.name, 'quantity': item.quantity, 'unit': item.unit, 'in_fridge': True} for item in items],
-            'missing_items': [],
-            'steps': ['LLM 解析失败，请稍后重试'],
-            'estimated_time': 'N/A',
-        }
+            'suitable_for': '适合全家',
+            'taste': '家常',
+        }]
+    }
