@@ -25,28 +25,22 @@ def _log_operation(user, family, action, item, detail=''):
 
 # --- 空间管理 ---
 
-@api_view(['GET'])
-def list_spaces(request):
-    """当前家庭的所有空间"""
+@api_view(['GET', 'POST'])
+def spaces_list(request):
+    """空间列表(GET) / 新建空间(POST)"""
     family = request.wx_family
     if not family:
         return Response({'error': '未加入家庭', 'success': False}, status=404)
-    spaces = StorageSpace.objects.filter(family=family)
-    serializer = StorageSpaceSerializer(spaces, many=True)
-    data = serializer.data
-    for d in data:
-        d['item_count'] = FoodItem.objects.filter(
-            storage_space_id=d['id'], family=family, is_consumed=False
-        ).count()
-    return Response({'data': data, 'success': True})
-
-
-@api_view(['POST'])
-def create_space(request):
-    """新建空间"""
-    family = request.wx_family
-    if not family:
-        return Response({'error': '未加入家庭', 'success': False}, status=404)
+    if request.method == 'GET':
+        spaces = StorageSpace.objects.filter(family=family)
+        serializer = StorageSpaceSerializer(spaces, many=True)
+        data = serializer.data
+        for d in data:
+            d['item_count'] = FoodItem.objects.filter(
+                storage_space_id=d['id'], family=family, is_consumed=False
+            ).count()
+        return Response({'data': data, 'success': True})
+    # POST
     serializer = StorageSpaceSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save(family=family)
@@ -124,56 +118,73 @@ def item_overview(request):
     })
 
 
-@api_view(['GET'])
-def list_items(request):
-    """物品列表（支持筛选）"""
+@api_view(['GET', 'POST'])
+def items_list(request):
+    """物品列表(GET) / 创建物品(POST)"""
     family = request.wx_family
     if not family:
         return Response({'error': '未加入家庭', 'success': False}, status=404)
-    items = FoodItem.objects.filter(family=family).select_related('storage_space', 'added_by')
-    # 筛选
-    space_id = request.query_params.get('space_id')
-    if space_id:
-        items = items.filter(storage_space_id=space_id)
-    category = request.query_params.get('category')
-    if category:
-        items = items.filter(category=category)
-    consumed = request.query_params.get('consumed')
-    if consumed == '1':
-        items = items.filter(is_consumed=True)
-    elif consumed != '1':
-        items = items.filter(is_consumed=False)
-    items = items.order_by('-created_at')
-    from common.pagination import StandardPagination
-    paginator = StandardPagination()
-    result_page = paginator.paginate_queryset(items, request)
-    serializer = FoodItemSerializer(result_page, many=True)
-    return paginator.get_paginated_response(serializer.data)
-
-
-@api_view(['GET'])
-def item_detail(request, item_id):
-    """物品详情"""
-    family = request.wx_family
-    if not family:
-        return Response({'error': '未加入家庭', 'success': False}, status=404)
-    item = get_object_or_404(FoodItem, id=item_id, family=family)
-    serializer = FoodItemSerializer(item)
-    return Response({'data': serializer.data, 'success': True})
-
-
-@api_view(['POST'])
-def create_item(request):
-    """创建单个物品（手动录入/语音确认后使用）"""
+    if request.method == 'GET':
+        items = FoodItem.objects.filter(family=family).select_related('storage_space', 'added_by')
+        space_id = request.query_params.get('space_id')
+        if space_id:
+            items = items.filter(storage_space_id=space_id)
+        category = request.query_params.get('category')
+        if category:
+            items = items.filter(category=category)
+        consumed = request.query_params.get('consumed')
+        if consumed == '1':
+            items = items.filter(is_consumed=True)
+        elif consumed != '1':
+            items = items.filter(is_consumed=False)
+        items = items.order_by('-created_at')
+        from common.pagination import StandardPagination
+        paginator = StandardPagination()
+        result_page = paginator.paginate_queryset(items, request)
+        serializer = FoodItemSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+    # POST
     user = request.wx_user
-    family = request.wx_family
-    if not user or not family:
-        return Response({'error': '未登录或未加入家庭', 'success': False}, status=401)
+    if not user:
+        return Response({'error': '未登录', 'success': False}, status=401)
     serializer = FoodItemCreateSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     item = serializer.save(family=family, added_by=user)
     _log_operation(user, family, OperationLog.Action.ADD, item, f'新增了 {item.name} x{item.quantity}{item.unit}')
     return Response({'data': FoodItemSerializer(item).data, 'success': True}, status=201)
+
+
+@api_view(['GET', 'PATCH', 'DELETE'])
+def item_detail(request, item_id):
+    """物品详情(GET) / 编辑(PATCH) / 删除(DELETE)"""
+    family = request.wx_family
+    if not family:
+        return Response({'error': '未加入家庭', 'success': False}, status=404)
+    item = get_object_or_404(FoodItem, id=item_id, family=family)
+    if request.method == 'GET':
+        serializer = FoodItemSerializer(item)
+        return Response({'data': serializer.data, 'success': True})
+    # 以下需要登录
+    user = request.wx_user
+    if not user:
+        return Response({'error': '未登录', 'success': False}, status=401)
+    if request.method == 'PATCH':
+        serializer = FoodItemCreateSerializer(item, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        _log_operation(user, item.family, OperationLog.Action.MODIFY, item, f'修改了 {item.name}')
+        return Response({'data': FoodItemSerializer(item).data, 'success': True})
+    # DELETE
+    from apps.users.models import Member
+    try:
+        member = Member.objects.get(user=user, family=item.family)
+    except Member.DoesNotExist:
+        return Response({'error': '无权操作', 'success': False}, status=403)
+    if member.role != Member.Role.ADMIN and item.added_by != user:
+        return Response({'error': '无权限', 'success': False}, status=403)
+    _log_operation(user, item.family, OperationLog.Action.DELETE, item, f'删除了 {item.name}')
+    item.delete()
+    return Response({'success': True})
 
 
 @api_view(['POST'])
@@ -234,23 +245,6 @@ def voice_entry(request):
 
 
 @api_view(['PATCH'])
-def update_item(request, item_id):
-    """编辑物品"""
-    user = request.wx_user
-    family = request.wx_family
-    if not user:
-        return Response({'error': '未登录', 'success': False}, status=401)
-    if not family:
-        return Response({'error': '未加入家庭', 'success': False}, status=404)
-    item = get_object_or_404(FoodItem, id=item_id, family=family)
-    serializer = FoodItemCreateSerializer(item, data=request.data, partial=True)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    _log_operation(user, item.family, OperationLog.Action.MODIFY, item, f'修改了 {item.name}')
-    return Response({'data': FoodItemSerializer(item).data, 'success': True})
-
-
-@api_view(['PATCH'])
 def consume_item(request, item_id):
     """消耗物品（减数量）"""
     user = request.wx_user
@@ -292,26 +286,6 @@ def restore_item(request, item_id):
     item.save()
     _log_operation(user, item.family, OperationLog.Action.MODIFY, item, f'恢复了 {item.name}')
     return Response({'data': FoodItemSerializer(item).data, 'success': True})
-
-
-@api_view(['DELETE'])
-def delete_item(request, item_id):
-    """删除物品"""
-    user = request.wx_user
-    if not user:
-        return Response({'error': '未登录', 'success': False}, status=401)
-    item = get_object_or_404(FoodItem, id=item_id)
-    # 检查权限：只有管理员或物品录入人可删除
-    from apps.users.models import Member
-    try:
-        member = Member.objects.get(user=user, family=item.family)
-    except Member.DoesNotExist:
-        return Response({'error': '无权操作', 'success': False}, status=403)
-    if member.role != Member.Role.ADMIN and item.added_by != user:
-        return Response({'error': '无权限', 'success': False}, status=403)
-    _log_operation(user, item.family, OperationLog.Action.DELETE, item, f'删除了 {item.name}')
-    item.delete()
-    return Response({'success': True})
 
 
 # --- 操作日志 ---

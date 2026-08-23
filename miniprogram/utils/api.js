@@ -52,7 +52,7 @@ const families = {
 // 空间 API
 const spaces = {
   list: () => request('/api/spaces'),
-  create: (name, zone_type) => request('/api/spaces/create', { method: 'POST', data: { name, zone_type } }),
+  create: (name, zone_type) => request('/api/spaces', { method: 'POST', data: { name, zone_type } }),
   detail: (id) => request(`/api/spaces/${id}`),
 }
 
@@ -60,11 +60,11 @@ const spaces = {
 const items = {
   overview: () => request('/api/items/overview'),
   list: (params) => request('/api/items', { data: params }),
-  create: (data) => request('/api/items/create', { method: 'POST', data }),
+  create: (data) => request('/api/items', { method: 'POST', data }),
   batchCreate: (data) => request('/api/items/batch', { method: 'POST', data }),
   detail: (id) => request(`/api/items/${id}`),
   consume: (id, quantity) => request(`/api/items/${id}/consume`, { method: 'PATCH', data: { quantity } }),
-  delete: (id) => request(`/api/items/${id}/delete`, { method: 'DELETE' }),
+  delete: (id) => request(`/api/items/${id}`, { method: 'DELETE' }),
   barcode: (code) => request('/api/items/barcode', { method: 'POST', data: { barcode: code } }),
   voice: (text) => request('/api/items/voice', { method: 'POST', data: { raw_text: text } }),
 }
@@ -77,9 +77,9 @@ const recipes = {
 // 购物清单 API
 const shopping = {
   list: () => request('/api/shopping-list'),
-  create: (data) => request('/api/shopping-list/add', { method: 'POST', data }),
-  toggle: (id, is_purchased) => request(`/api/shopping-list/${id}/purchased`, { method: 'PATCH', data: { is_purchased } }),
-  delete: (id) => request(`/api/shopping-list/${id}/delete`, { method: 'DELETE' }),
+  create: (data) => request('/api/shopping-list', { method: 'POST', data }),
+  toggle: (id, is_purchased) => request(`/api/shopping-list/${id}`, { method: 'PATCH', data: { is_purchased } }),
+  delete: (id) => request(`/api/shopping-list/${id}`, { method: 'DELETE' }),
   clearChecked: () => request('/api/shopping-list/clear-checked', { method: 'DELETE' }),
 }
 
