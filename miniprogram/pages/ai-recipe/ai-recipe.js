@@ -26,17 +26,25 @@ Page({
   },
 
   toggleItem(e) {
-    const id = e.currentTarget.dataset.id
-    console.log('toggleItem:', id, 'selectedIds:', this.data.selectedIds)
-    const selected = [...this.data.selectedIds]
-    const idx = selected.indexOf(id)
-    if (idx > -1) {
-      selected.splice(idx, 1)
-    } else {
-      selected.push(id)
+    try {
+      const id = e.currentTarget.dataset.id
+      console.log('toggleItem clicked, id:', id)
+      if (!id) {
+        console.error('toggleItem: id is undefined')
+        return
+      }
+      const selected = [...this.data.selectedIds]
+      const idx = selected.indexOf(id)
+      if (idx > -1) {
+        selected.splice(idx, 1)
+      } else {
+        selected.push(id)
+      }
+      this.setData({ selectedIds: selected, recipes: null, error: '' })
+      console.log('toggleItem done, selectedIds:', selected, 'count:', selected.length)
+    } catch (err) {
+      console.error('toggleItem error:', err)
     }
-    this.setData({ selectedIds: selected, recipes: null, error: '' })
-    console.log('after toggle, selectedIds:', selected)
   },
 
   async generateRecipe() {

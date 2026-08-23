@@ -25,6 +25,11 @@
     已选 {{selectedIds.length}} 种食材
   </view>
 
+  <!-- debug: 显示已加载食材数量和选中数量 -->
+  <view class="debug-bar">
+    食材 {{items.length}} 种 · 已选 {{selectedIds.length}} 个
+  </view>
+
   <button
     class="btn-primary generate-btn {{loading || selectedIds.length === 0 ? 'btn-disabled' : ''}}"
     disabled="{{loading || selectedIds.length === 0}}"
