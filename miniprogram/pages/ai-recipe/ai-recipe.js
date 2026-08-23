@@ -56,7 +56,7 @@ Page({
     try {
       const res = await api.recipes.generate(this.data.selectedIds)
       if (res.success) {
-        this.setData({ recipes: res.data.recipes })
+        this.setData({ recipes: res.data?.recipes || [] })
       } else {
         this.setData({ error: res.error || '生成失败' })
       }
