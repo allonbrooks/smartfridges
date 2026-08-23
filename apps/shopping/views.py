@@ -54,3 +54,24 @@ def mark_purchased(request, item_id):
         item.purchased_at = None
     item.save()
     return Response({'data': ShoppingListSerializer(item).data, 'success': True})
+
+
+@api_view(['DELETE'])
+def delete_shopping_item(request, item_id):
+    """删除购物清单项"""
+    family = request.wx_family
+    if not family:
+        return Response({'error': '未加入家庭', 'success': False}, status=404)
+    item = get_object_or_404(ShoppingList, id=item_id, family=family)
+    item.delete()
+    return Response({'success': True})
+
+
+@api_view(['DELETE'])
+def clear_checked(request):
+    """清空已购买的项"""
+    family = request.wx_family
+    if not family:
+        return Response({'error': '未加入家庭', 'success': False}, status=404)
+    ShoppingList.objects.filter(family=family, is_purchased=True).delete()
+    return Response({'success': True})

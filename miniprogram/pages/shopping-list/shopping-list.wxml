@@ -1,0 +1,50 @@
+<!-- 购物清单 -->
+<view class="page">
+  <view class="header-actions">
+    <view class="add-btn" bindtap="showAddDialog">
+      <text>＋ 添加商品</text>
+    </view>
+    <view class="clear-btn" bindtap="clearChecked">
+      <text>清空已购</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <view wx:elif="{{items.length === 0}}" class="empty-state">
+    <text class="icon">🛒</text>
+    <text>购物清单还是空的</text>
+  </view>
+
+  <view wx:else class="list">
+    <view
+      class="list-item {{item.is_purchased ? 'checked' : ''}}"
+      wx:for="{{items}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      data-purchased="{{item.is_purchased}}"
+    >
+      <view class="checkbox" bindtap="toggleItem">
+        <text class="check-icon">{{item.is_purchased ? '✓' : ''}}</text>
+      </view>
+      <view class="item-body" bindtap="toggleItem">
+        <text class="item-name">{{item.item_name}}</text>
+        <text class="item-qty">{{item.quantity}}{{item.unit || '个'}}</text>
+      </view>
+      <view class="delete-btn" data-id="{{item.id}}" catchtap="deleteItem">删除</view>
+    </view>
+  </view>
+
+  <!-- 添加弹窗 -->
+  <view wx:if="{{showAdd}}" class="modal-mask" bindtap="hideAddDialog">
+    <view class="modal-content" catchtap="noop">
+      <text class="modal-title">添加商品</text>
+      <input class="modal-input" placeholder="商品名称" value="{{newItemName}}" bindinput="onNameInput" />
+      <input class="modal-input" placeholder="数量" type="number" value="{{newItemQuantity}}" bindinput="onQuantityInput" />
+      <view class="modal-actions">
+        <button class="btn-cancel" bindtap="hideAddDialog">取消</button>
+        <button class="btn-confirm" bindtap="addItem">添加</button>
+      </view>
+    </view>
+  </view>
+</view>
