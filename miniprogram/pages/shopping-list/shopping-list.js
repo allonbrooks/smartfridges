@@ -23,7 +23,11 @@ Page({
         this.setData({ items: res.data || [] })
       }
     } catch (e) {
-      console.error(e)
+      if (e?.error?.includes('家庭')) {
+        wx.showToast({ title: '请先在首页创建家庭', icon: 'none' })
+      } else {
+        console.error(e)
+      }
     } finally {
       this.setData({ loading: false })
     }

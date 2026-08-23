@@ -2,7 +2,12 @@
 const app = getApp()
 
 // 开发环境 mock OpenID（云托管正式环境会由网关自动注入真实值）
-const DEV_OPENID = 'dev_user_' + Date.now()
+// 使用缓存保持 OpenID 一致，避免家庭关联丢失
+let DEV_OPENID = wx.getStorageSync('dev_openid')
+if (!DEV_OPENID) {
+  DEV_OPENID = 'dev_user_' + Date.now()
+  wx.setStorageSync('dev_openid', DEV_OPENID)
+}
 
 function request(url, options = {}) {
   return new Promise((resolve, reject) => {
