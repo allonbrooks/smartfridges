@@ -4,7 +4,7 @@
   font-size: 28rpx;
   font-weight: 500;
   padding: 20rpx 20rpx 12rpx;
-  color: #666;
+  color: rgb(102, 102, 102);
 }
 .ingredient-grid {
   display: flex;
@@ -13,8 +13,8 @@
   margin: 0 20rpx 20rpx;
 }
 .ingredient {
-  background: #fff;
-  border: 2rpx solid #eee;
+  background: rgb(255, 255, 255);
+  border: 2rpx solid rgb(238, 238, 238);
   border-radius: 12rpx;
   padding: 16rpx 24rpx;
   text-align: center;
@@ -22,11 +22,11 @@
   position: relative;
 }
 .ingredient.selected {
-  border-color: #07c160;
-  background: #f6ffed;
+  border-color: rgb(7, 193, 96);
+  background: rgb(246, 255, 237);
 }
 .ingredient.selected .name {
-  color: #07c160;
+  color: rgb(7, 193, 96);
   font-weight: 600;
 }
 .checked-badge {
@@ -35,8 +35,8 @@
   right: -8rpx;
   width: 36rpx;
   height: 36rpx;
-  background: #07c160;
-  color: #fff;
+  background: rgb(7, 193, 96);
+  color: rgb(255, 255, 255);
   font-size: 22rpx;
   border-radius: 50%;
   text-align: center;
@@ -45,7 +45,7 @@
 .debug-bar {
   text-align: center;
   font-size: 20rpx;
-  color: #ccc;
+  color: rgb(204, 204, 204);
   margin: 0 0 8rpx;
 }
 .ingredient .name {
@@ -56,7 +56,7 @@
 .ingredient .qty {
   display: block;
   font-size: 22rpx;
-  color: #999;
+  color: rgb(153, 153, 153);
   margin-top: 4rpx;
 }
 .generate-btn {
@@ -68,16 +68,16 @@
 }
 .error-msg {
   text-align: center;
-  color: #f5222d;
+  color: rgb(245, 34, 45);
   font-size: 26rpx;
   margin: 20rpx;
 }
 .recipe-card {
   margin: 0 20rpx 20rpx;
-  background: #fff;
+  background: rgb(255, 255, 255);
   border-radius: 16rpx;
   padding: 32rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
 }
 .recipe-title {
   display: block;
@@ -95,21 +95,21 @@
   font-size: 22rpx;
   padding: 6rpx 16rpx;
   border-radius: 20rpx;
-  background: #f0f5ff;
-  color: #1890ff;
+  background: rgb(240, 245, 255);
+  color: rgb(24, 144, 255);
 }
-.tag.taste { background: #fff7e6; color: #fa8c16; }
-.tag.time { background: #f6ffed; color: #52c41a; }
+.tag.taste { background: rgb(255, 247, 230); color: rgb(250, 140, 22); }
+.tag.time { background: rgb(246, 255, 237); color: rgb(82, 196, 26); }
 .recipe-section { margin-bottom: 20rpx; }
 .section-label { font-size: 28rpx; font-weight: 600; display: block; margin-bottom: 8rpx; }
-.ingredient-item { font-size: 26rpx; color: #666; padding: 4rpx 0; }
-.missing-label { color: #faad14; }
-.missing-item { color: #faad14; }
-.hint { font-size: 22rpx; color: #999; }
-.step-item { font-size: 26rpx; color: #333; line-height: 1.6; padding: 6rpx 0; display: block; }
+.ingredient-item { font-size: 26rpx; color: rgb(102, 102, 102); padding: 4rpx 0; }
+.missing-label { color: rgb(250, 173, 20); }
+.missing-item { color: rgb(250, 173, 20); }
+.hint { font-size: 22rpx; color: rgb(153, 153, 153); }
+.step-item { font-size: 26rpx; color: rgb(51, 51, 51); line-height: 1.6; padding: 6rpx 0; display: block; }
 .selected-count {
   text-align: center;
   font-size: 24rpx;
-  color: #07c160;
+  color: rgb(7, 193, 96);
   margin: 0 0 16rpx;
 }
