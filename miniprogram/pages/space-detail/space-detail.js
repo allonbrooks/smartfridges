@@ -13,6 +13,7 @@ Page({
     loading: true,
     spaceId: '',
     showAdd: false,
+    submitting: false,
     newName: '',
     newQuantity: '1',
     newExpiryDate: addDays(7),
@@ -93,10 +94,12 @@ Page({
   onExpiryDateChange(e) { this.setData({ newExpiryDate: e.detail.value }) },
 
   async addItem() {
+    if (this.data.submitting) return
     if (!this.data.newName.trim()) {
       wx.showToast({ title: '请输入物品名称', icon: 'none' })
       return
     }
+    this.setData({ submitting: true })
     try {
       const res = await api.items.create({
         name: this.data.newName.trim(),
@@ -110,7 +113,10 @@ Page({
         this.loadSpaceDetail()
       }
     } catch (e) {
-      console.error(e)
+      console.error('addItem error:', e)
+      wx.showToast({ title: e?.error || e?.errMsg || '请求失败，请检查网络', icon: 'none' })
+    } finally {
+      this.setData({ submitting: false })
     }
   },
 
