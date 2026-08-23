@@ -44,6 +44,7 @@ class FoodItemCreateSerializer(serializers.ModelSerializer):
     """创建物品时使用，不需要计算字段"""
     quantity = serializers.IntegerField(default=1, min_value=1)
     expiry_date = serializers.DateField(required=False)
+    days_to_expire = serializers.IntegerField(required=False, read_only=True)
 
     class Meta:
         model = FoodItem
@@ -56,6 +57,8 @@ class FoodItemCreateSerializer(serializers.ModelSerializer):
         from datetime import date, timedelta
         if 'expiry_date' not in attrs and 'days_to_expire' in attrs:
             attrs['expiry_date'] = date.today() + timedelta(days=attrs['days_to_expire'])
+        if 'expiry_date' in attrs and 'days_to_expire' not in attrs:                                                                                                                                 
+            attrs['days_to_expire'] = (attrs['expiry_date'] - date.today()).days 
         return attrs
 
 
