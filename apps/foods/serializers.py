@@ -42,6 +42,7 @@ class FoodItemSerializer(serializers.ModelSerializer):
 class FoodItemCreateSerializer(serializers.ModelSerializer):
     """创建物品时使用，不需要计算字段"""
     quantity = serializers.IntegerField(default=1, min_value=1)
+    expiry_date = serializers.DateField(required=False)
 
     class Meta:
         model = FoodItem
@@ -49,6 +50,12 @@ class FoodItemCreateSerializer(serializers.ModelSerializer):
             'name', 'category', 'storage_space', 'barcode', 'icon',
             'quantity', 'unit', 'expiry_date', 'days_to_expire', 'note',
         ]
+
+    def validate(self, attrs):
+        from datetime import date, timedelta
+        if 'expiry_date' not in attrs and 'days_to_expire' in attrs:
+            attrs['expiry_date'] = date.today() + timedelta(days=attrs['days_to_expire'])
+        return attrs
 
 
 class ConsumeSerializer(serializers.Serializer):
