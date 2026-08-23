@@ -91,7 +91,7 @@
       <view class="form-group">
         <text class="form-label">存放空间</text>
         <picker mode="selector" range="{{allSpaces}}" range-key="name" value="{{editSpaceIndex}}" bindchange="onEditSpaceChange">
-          <view class="form-input picker-input">{{allSpaces[editSpaceIndex].name}}</view>
+          <view class="form-input picker-input">{{editSpaceName}}</view>
         </picker>
       </view>
 
@@ -110,8 +110,8 @@
 
       <view class="form-group">
         <text class="form-label">目标空间</text>
-        <picker mode="selector" range="{{allSpaces.filter(s => s.id !== spaceId)}}" range-key="name" value="{{0}}" bindchange="onMoveToChange">
-          <view class="form-input picker-input">{{selectedMoveTo ? (allSpaces.find(s => s.id === selectedMoveTo) || {}).name : '请选择'}}</view>
+        <picker mode="selector" range="{{deleteSpaceSpaces}}" range-key="name" value="{{0}}" bindchange="onMoveToChange">
+          <view class="form-input picker-input">{{selectedMoveToName}}</view>
         </picker>
       </view>
 

@@ -26,9 +26,12 @@ Page({
     editSpaceId: '',
     allSpaces: [],
     editSpaceIndex: 0,
+    editSpaceName: '',
     // 删除空间
     showDeleteSpace: false,
+    deleteSpaceSpaces: [],
     selectedMoveTo: '',
+    selectedMoveToName: '请选择',
   },
 
   onLoad(options) {
@@ -173,14 +176,16 @@ Page({
     const item = this.data.items.find(i => i.id === id)
     if (!item) return
     const spaceIdx = this.data.allSpaces.findIndex(s => s.id === (item.storage_space || this.data.spaceId))
+    const space = this.data.allSpaces[spaceIdx >= 0 ? spaceIdx : 0]
     this.setData({
       showEdit: true,
       editItemId: id,
       editName: item.name,
       editQuantity: String(item.quantity || 1),
       editExpiryDate: item.expiry_date || addDays(7),
-      editSpaceId: item.storage_space || this.data.spaceId,
+      editSpaceId: space ? space.id : '',
       editSpaceIndex: spaceIdx >= 0 ? spaceIdx : 0,
+      editSpaceName: space ? space.name : '',
     })
   },
 
@@ -195,7 +200,7 @@ Page({
     const idx = e.detail.value
     const space = this.data.allSpaces[idx]
     if (space) {
-      this.setData({ editSpaceId: space.id, editSpaceIndex: idx })
+      this.setData({ editSpaceId: space.id, editSpaceIndex: idx, editSpaceName: space.name })
     }
   },
 
@@ -230,6 +235,8 @@ Page({
 
   onDeleteSpace() {
     const items = this.data.items
+    // 预计算可迁移的目标空间列表（排除当前空间）
+    const otherSpaces = this.data.allSpaces.filter(s => s.id !== this.data.spaceId)
     if (items.length === 0) {
       // 空间为空，直接确认删除
       wx.showModal({
@@ -243,7 +250,9 @@ Page({
       // 有物品，显示迁移弹窗
       this.setData({
         showDeleteSpace: true,
-        selectedMoveTo: '',
+        deleteSpaceSpaces: otherSpaces,
+        selectedMoveTo: otherSpaces.length > 0 ? otherSpaces[0].id : '',
+        selectedMoveToName: otherSpaces.length > 0 ? otherSpaces[0].name : '暂无其他空间',
       })
     }
   },
@@ -254,9 +263,9 @@ Page({
 
   onMoveToChange(e) {
     const idx = e.detail.value
-    const space = this.data.allSpaces.filter(s => s.id !== this.data.spaceId)[idx]
+    const space = this.data.deleteSpaceSpaces[idx]
     if (space) {
-      this.setData({ selectedMoveTo: space.id })
+      this.setData({ selectedMoveTo: space.id, selectedMoveToName: space.name })
     }
   },
 
